@@ -109,11 +109,12 @@ async function swap() {
     const amountOutMin = amountOut * (1 - slippage);
     // TODO: waiting UI
     if(isETH) {
+        console.log(await defaultAccountPromise(), amountOutMin, amountIn)
         await mySwap.methods.exchangeETHForFuse(amountOutMin)
-            .send({from: await defaultAccountPromise(), value: amountIn});
+            .send({from: (await defaultAccountPromise())[0], value: amountIn});
     } else {
         await mySwap.methods.exchangeEthereumTokenForFuse(erc20Typed, amountIn, amountOutMin)
-            .send({from: await defaultAccountPromise()});
+            .send({from: (await defaultAccountPromise())[0]});
     }
 }
 
