@@ -27,7 +27,7 @@ window.onload = async function() {
         uniswap = new web3.eth.Contract(JSON.parse(factoryAbi), factoryContractAddress);
         // FIXME:
         // mySwap = new web3.eth.Contract(JSON.parse(mySwapAbi), mySwapAddress);
-        // myShare = await mySwap.methods.ownerShare().call() / (1 << 128);
+        // myShare = await mySwap.methods.ownerShare().call() / (1 << 64);
         myShare = 0.01;
     } else {
         this.alert("Enable MetaMask!")

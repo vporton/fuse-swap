@@ -51,7 +51,7 @@ abstract contract BaseFuseSwap is BaseToken
     }
 
     function setOwnerShare(int128 _ownerShare) external onlyOwner {
-        require(_ownerShare >= 0 && _ownerShare < int128((1 << 128) - 1), "Wrong share.");
+        require(_ownerShare >= 0 && _ownerShare < int128(1 << 64), "Wrong share.");
         ownerShare = _ownerShare;
     }
 
