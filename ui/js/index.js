@@ -56,7 +56,7 @@ async function calcInput() {
     const isETH = document.getElementById("tokenKindETH").checked;
     const buyTyped = document.getElementById('buy').value;
     const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
-    if(!checkNumber(sellTyped) || (!isETH && !web3.utils.isAddress(erc20Typed))) return;
+    if(!checkNumber(buyTyped) || (!isETH && !web3.utils.isAddress(erc20Typed))) return;
     const buy = web3.utils.toWei(document.getElementById('buy').value);
     const uniswapV2Router02 = new web3.eth.Contract(JSON.parse(routerAbi), uniswapV2Router02Address);
     const tokenAddress = isETH ? await uniswapV2Router02.methods.WETH().call() : erc20Typed;
@@ -66,4 +66,18 @@ async function calcInput() {
             return p;
         });
     document.getElementById('sell').value = web3.utils.fromWei(sellData[0]);
+}
+
+async function swap() {
+    const mySwap = new web3.eth.Contract(JSON.parse(mySwapAbi), mySwapAddress);
+    const isETH = document.getElementById("tokenKindETH").checked;
+    const erc20Typed = document.getElementById('erc20').value;
+    // TODO: waiting UI
+    if(isETH) {
+        await mySwap.methods.exchangeETHForFuse(amountOutMin)
+            .send({from: await defaultAccountPromise(), value: amountIn});
+    } else {
+        await mySwap.methods.exchangeEthereumTokenForFuse(erc20Typed, amountIn, amountOutMin)
+            .send({from: await defaultAccountPromise()});
+    }
 }
