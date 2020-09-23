@@ -104,9 +104,9 @@ async function swap() {
     const isETH = document.getElementById("tokenKindETH").checked;
     const erc20Typed = document.getElementById('erc20').value;
     const amountIn = web3.utils.toWei(document.getElementById('sell').value);
-    const amountOut = web3.utils.toWei(document.getElementById('buy').value);
+    const amountOutTyped = document.getElementById('buy').value;
     const slippage = document.getElementById('slippage').value / 100;
-    const amountOutMin = amountOut * (1 - slippage);
+    const amountOutMin = web3.utils.toWei(amountOutTyped * (1 - slippage));
     // TODO: waiting UI
     if(isETH) {
         console.log(await defaultAccountPromise(), amountOutMin, amountIn)
