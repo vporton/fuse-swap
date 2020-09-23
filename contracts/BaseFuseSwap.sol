@@ -1,7 +1,6 @@
 //SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity =0.6.6;
 
-// import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@uniswap/v2-periphery/contracts/UniswapV2Router02.sol';
 import './ABDKMath64x64.sol';
 import './BaseToken.sol';
@@ -64,27 +63,26 @@ abstract contract BaseFuseSwap is BaseToken
         address[] memory path = new address[](2);
         path[0] = address(tokenIn);
         path[1] = address(FuseTokenOnEthereum);
-        uint256 balanceOld = FuseTokenOnEthereum.balanceOf(msg.sender);
-        uniswapV2Router02Address.swapExactTokensForTokens(amountInRemaining, amountOutMin, path, msg.sender, block.timestamp);
-        uint256 balanceNew = FuseTokenOnEthereum.balanceOf(msg.sender);
-        _deliverToBridge(balanceNew - balanceOld);
+        uint256[] memory amounts =
+            uniswapV2Router02Address.swapExactTokensForTokens(amountInRemaining, amountOutMin, path, msg.sender, block.timestamp);
+        _deliverToBridge(amounts[1]);
     }
 
     function exchangeETHForFuse(uint256 amountOutMin) external payable {
         uint256 ownerAmount = ownerShare.mulu(msg.value);
         totalDividends += ownerAmount;
         uint256 amountInRemaining = msg.value - ownerAmount;
-        uint256 balanceOld = FuseTokenOnEthereum.balanceOf(msg.sender);
-        this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin, msg.sender);
-        uint256 balanceNew = FuseTokenOnEthereum.balanceOf(msg.sender);
-        _deliverToBridge(balanceNew - balanceOld);
+        uint256 output = this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin, msg.sender);
+        _deliverToBridge(output);
     }
 
-    function exchangeETHForFuseImpl(uint256 amountOutMin, address sender) external payable {
+    function exchangeETHForFuseImpl(uint256 amountOutMin, address sender) external payable returns (uint256 output) {
         address[] memory path = new address[](2);
         path[0] = uniswapV2Router02Address.WETH();
         path[1] = address(FuseTokenOnEthereum);
-        uniswapV2Router02Address.swapExactETHForTokens{value: msg.value}(amountOutMin, path, sender, block.timestamp);
+        uint256[] memory amounts =
+            uniswapV2Router02Address.swapExactETHForTokens{value: msg.value}(amountOutMin, path, sender, block.timestamp);
+        return amounts[1];
     }
 
     function _deliverToBridge(uint256 fuseAmount) internal {
