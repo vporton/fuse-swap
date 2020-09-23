@@ -72,22 +72,22 @@ abstract contract BaseFuseSwap is BaseToken
         uint256 ownerAmount = ownerShare.mulu(msg.value);
         totalDividends += ownerAmount;
         uint256 amountInRemaining = msg.value - ownerAmount;
-        this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin);
+        this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin, msg.sender);
         _deliverToBridge();
     }
 
-    function exchangeETHForFuseImpl(uint256 amountOutMin) external payable {
+    function exchangeETHForFuseImpl(uint256 amountOutMin, address sender) external payable {
         address[] memory path = new address[](2);
         path[0] = uniswapV2Router02Address.WETH();
         path[1] = address(FuseTokenOnEthereum);
-        uniswapV2Router02Address.swapExactETHForTokens{value: msg.value}(amountOutMin, path, msg.sender, block.timestamp);
+        uniswapV2Router02Address.swapExactETHForTokens{value: msg.value}(amountOutMin, path, sender, block.timestamp);
     }
 
     function _deliverToBridge() internal {
         // Better would be to check balance twice, but that would use gas.
         uint256 fuseAmount = FuseTokenOnEthereum.balanceOf(address(this)) - tokenTotalDividends[FuseTokenOnEthereum];
-        this.approveForSenderImpl(msg.sender, fuseAmount); // change msg.sender
-        FuseTokenOnEthereum.transferFrom(address(this), msg.sender, fuseAmount);
+        // this.approveForSenderImpl(msg.sender, fuseAmount); // change msg.sender
+        // FuseTokenOnEthereum.transferFrom(address(this), msg.sender, fuseAmount);
         FuseTokenOnEthereum.transfer(Bridge(), fuseAmount);
     }
 
