@@ -62,7 +62,7 @@ async function calcOutput() {
     document.getElementById('swap').disabled = true;
     const isETH = document.getElementById("tokenKindETH").checked;
     const sellTyped = document.getElementById('sell').value;
-    const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
+    const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d
     const slippageTyped = document.getElementById('slippage').value;
     if(!checkNumber(sellTyped) || !checkNumber(slippageTyped) || (!isETH && !web3.utils.isAddress(erc20Typed))) return;
     const sell = web3.utils.toWei(sellTyped);
@@ -81,7 +81,7 @@ async function calcInput() {
     document.getElementById('swap').disabled = true;
     const isETH = document.getElementById("tokenKindETH").checked;
     const buyTyped = document.getElementById('buy').value;
-    const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
+    const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d
     const slippageTyped = document.getElementById('slippage').value;
     if(!checkNumber(buyTyped) || !checkNumber(slippageTyped) || (!isETH && !web3.utils.isAddress(erc20Typed))) return;
     const buy = web3.utils.toWei(document.getElementById('buy').value);
