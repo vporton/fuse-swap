@@ -50,7 +50,7 @@ abstract contract BaseFuseSwap is BaseToken
         owner = address(0);
     }
 
-    function setOwnerShare(int128 _ownerShare) external onlyOwner{
+    function setOwnerShare(int128 _ownerShare) external onlyOwner {
         require(_ownerShare >= 0 && _ownerShare < int128((1 << 128) - 1), "Wrong share.");
         ownerShare = _ownerShare;
     }
