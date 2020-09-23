@@ -9,4 +9,4 @@ const fuseToken = '0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d';
 
 const uniswapV2Router02Address = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
 
-const mySwapAddress = '0x6306D7D8F1B999b08097c0bf6f53C315F68DDb79';
+const mySwapAddress = '0x51ec75B120368fa7B5eC988C6E8eBfDA86dD9De8';
