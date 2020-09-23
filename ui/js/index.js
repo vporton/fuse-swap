@@ -29,19 +29,20 @@ async function defaultAccountPromise() {
 
 async function calcOutput() {
     const sell = web3.utils.toWei(document.getElementById('sell').value);
-    let buy;
-    if(document.getElementById("tokenKindETH").checked) {
-        const uniswapV2Router02 = new web3.eth.Contract(JSON.parse(routerAbi), uniswapV2Router02Address);
-        const wethAddress = await uniswapV2Router02.methods.WETH().call();
-        buy = (await uniswapV2Router02.methods.getAmountsOut(sell, [wethAddress, fuseToken]).call())[1];
-    } else {
-        const uniswapV2Router02 = new web3.eth.Contract(JSON.parse(routerAbi), uniswapV2Router02Address);
-        const tokenAddress = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d
-        const wethAddress = await uniswapV2Router02.methods.WETH().call();
-        console.log(wethAddress)
-        // console.log(sell, tokenAddress, fuseToken)
-        // console.log(typeof(sell), typeof(tokenAddress), typeof(fuseToken))
-        buy = (await uniswapV2Router02.methods.getAmountsOut(sell, [tokenAddress, fuseToken]).call())[1];
-    }
-    document.getElementById('buy').value = buy //web3.utils.fromWei(buy);
+    const isETH = document.getElementById("tokenKindETH").checked;
+    const uniswapV2Router02 = new web3.eth.Contract(JSON.parse(routerAbi), uniswapV2Router02Address);
+    const tokenAddress = isETH ? await uniswapV2Router02.methods.WETH().call()
+                               : document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
+    const buy = (await uniswapV2Router02.methods.getAmountsOut(sell, [tokenAddress, fuseToken]).call())[1];
+    document.getElementById('buy').value = web3.utils.fromWei(buy);
+}
+
+async function calcInput() {
+    const buy = web3.utils.toWei(document.getElementById('buy').value);
+    const isETH = document.getElementById("tokenKindETH").checked;
+    const uniswapV2Router02 = new web3.eth.Contract(JSON.parse(routerAbi), uniswapV2Router02Address);
+    const tokenAddress = isETH ? await uniswapV2Router02.methods.WETH().call()
+                               : document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
+    const sell = (await uniswapV2Router02.methods.getAmountsIn(buy, [tokenAddress, fuseToken]).call())[0];
+    document.getElementById('sell').value = web3.utils.fromWei(sell);
 }
