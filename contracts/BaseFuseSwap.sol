@@ -59,8 +59,8 @@ abstract contract BaseFuseSwap is BaseToken
         uint256 ownerAmount = ownerShare.mulu(amountIn);
         tokenTotalDividends[tokenIn] += ownerAmount;
         uint256 amountInRemaining = amountIn - ownerAmount;
-        require(tokenIn.transferFrom(msg.sender, address(this), amountInRemaining), 'transferFrom failed.'); // FIXME
-        require(tokenIn.approve(address(uniswapV2Router02Address), amountInRemaining), 'approve failed.');
+        require(tokenIn.transfer(address(this), amountInRemaining), 'transfer failed');
+        require(tokenIn.approve(address(uniswapV2Router02Address), amountInRemaining), 'approve failed');
         address[] memory path = new address[](2);
         path[0] = address(tokenIn);
         path[1] = address(FuseTokenOnEthereum);
@@ -86,9 +86,9 @@ abstract contract BaseFuseSwap is BaseToken
     function _deliverToBridge() internal {
         // Better would be to check balance twice, but that would use gas.
         uint256 fuseAmount = FuseTokenOnEthereum.balanceOf(address(this)) - tokenTotalDividends[FuseTokenOnEthereum];
-        FuseTokenOnEthereum.transfer(msg.sender, fuseAmount);
-        FuseTokenOnEthereum.approve(msg.sender, fuseAmount);
-        FuseTokenOnEthereum.transferFrom(msg.sender, Bridge(), fuseAmount);
+        FuseTokenOnEthereum.approve(address(this), fuseAmount);
+        FuseTokenOnEthereum.transferFrom(address(this), msg.sender, fuseAmount);
+        FuseTokenOnEthereum.transfer(Bridge(), fuseAmount);
     }
 
     function Bridge() internal virtual returns (address payable);
