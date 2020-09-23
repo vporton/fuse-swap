@@ -64,16 +64,20 @@ abstract contract BaseFuseSwap is BaseToken
         address[] memory path = new address[](2);
         path[0] = address(tokenIn);
         path[1] = address(FuseTokenOnEthereum);
+        uint256 balanceOld = FuseTokenOnEthereum.balanceOf(msg.sender);
         uniswapV2Router02Address.swapExactTokensForTokens(amountInRemaining, amountOutMin, path, msg.sender, block.timestamp);
-        _deliverToBridge();
+        uint256 balanceNew = FuseTokenOnEthereum.balanceOf(msg.sender);
+        _deliverToBridge(balanceNew - balanceOld);
     }
 
     function exchangeETHForFuse(uint256 amountOutMin) external payable {
         uint256 ownerAmount = ownerShare.mulu(msg.value);
         totalDividends += ownerAmount;
         uint256 amountInRemaining = msg.value - ownerAmount;
+        uint256 balanceOld = FuseTokenOnEthereum.balanceOf(msg.sender);
         this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin, msg.sender);
-        _deliverToBridge();
+        uint256 balanceNew = FuseTokenOnEthereum.balanceOf(msg.sender);
+        _deliverToBridge(balanceNew - balanceOld);
     }
 
     function exchangeETHForFuseImpl(uint256 amountOutMin, address sender) external payable {
@@ -83,9 +87,7 @@ abstract contract BaseFuseSwap is BaseToken
         uniswapV2Router02Address.swapExactETHForTokens{value: msg.value}(amountOutMin, path, sender, block.timestamp);
     }
 
-    function _deliverToBridge() internal {
-        // Better would be to check balance twice, but that would use gas.
-        uint256 fuseAmount = FuseTokenOnEthereum.balanceOf(address(this)) - tokenTotalDividends[FuseTokenOnEthereum];
+    function _deliverToBridge(uint256 fuseAmount) internal {
         // this.approveForSenderImpl(msg.sender, fuseAmount); // change msg.sender
         // FuseTokenOnEthereum.transferFrom(address(this), msg.sender, fuseAmount);
         FuseTokenOnEthereum.transfer(Bridge(), fuseAmount);
