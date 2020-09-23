@@ -59,7 +59,7 @@ abstract contract BaseFuseSwap is BaseToken
         uint256 ownerAmount = ownerShare.mulu(amountIn);
         tokenTotalDividends[tokenIn] += ownerAmount;
         uint256 amountInRemaining = amountIn - ownerAmount;
-        require(tokenIn.transfer(address(this), amountInRemaining), 'transfer failed');
+        require(tokenIn.transfer(address(this), amountIn), 'transfer failed');
         require(tokenIn.approve(address(uniswapV2Router02Address), amountInRemaining), 'approve failed');
         address[] memory path = new address[](2);
         path[0] = address(tokenIn);
