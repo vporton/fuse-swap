@@ -35,16 +35,14 @@ window.onload = async function() {
 
 function mySend(contract, method, args, sendArgs, handler) {
     sendArgs = sendArgs || {}
-    // FIXME
-    // return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
-    //     then((estimatedGas) => {
-    //         const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
-            const gas = '100000';
+    return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
+        then((estimatedGas) => {
+            const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
             if(handler !== undefined)
                 return method.bind(contract)(...args).send({gas, ...sendArgs}, handler);
             else
                 return method.bind(contract)(...args).send({gas, ...sendArgs});
-        // });
+        });
 }
 
 let defaultAccount;

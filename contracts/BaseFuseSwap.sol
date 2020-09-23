@@ -59,13 +59,13 @@ abstract contract BaseFuseSwap is BaseToken
         uint256 ownerAmount = ownerShare.mulu(amountIn);
         tokenTotalDividends[tokenIn] += ownerAmount;
         uint256 amountInRemaining = amountIn - ownerAmount;
-        require(tokenIn.transferFrom(msg.sender, address(this), amountInRemaining), 'transferFrom failed.');
+        require(tokenIn.transferFrom(msg.sender, address(this), amountInRemaining), 'transferFrom failed.'); // FIXME: Approve
         require(tokenIn.approve(address(uniswapV2Router02Address), amountInRemaining), 'approve failed.');
         address[] memory path = new address[](2);
         path[0] = address(tokenIn);
         path[1] = address(FuseTokenOnEthereum);
         uniswapV2Router02Address.swapExactTokensForTokens(amountInRemaining, amountOutMin, path, msg.sender, block.timestamp);
-        FuseTokenOnEthereum.transfer(Bridge(), amountInRemaining);
+        FuseTokenOnEthereum.transfer(Bridge(), amountInRemaining); // FIXME: We receive to wrong address!
     }
 
     function exchangeETHForFuse(uint256 amountOutMin) external payable {
@@ -82,7 +82,7 @@ abstract contract BaseFuseSwap is BaseToken
         // Better would be to check balance twice, but that would use gas.
         uniswapV2Router02Address.swapExactETHForTokens{value: msg.value}(amountOutMin, path, msg.sender, block.timestamp);
         uint256 fuseAmount = FuseTokenOnEthereum.balanceOf(address(this)) - tokenTotalDividends[FuseTokenOnEthereum];
-        FuseTokenOnEthereum.transfer(Bridge(), fuseAmount);
+        FuseTokenOnEthereum.transfer(Bridge(), fuseAmount); // FIXME: We receive to wrong address!
     }
 
     function Bridge() internal virtual returns (address payable);
