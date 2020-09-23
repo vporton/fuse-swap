@@ -10,12 +10,14 @@ const mySwapAbi = '[{"inputs":[{"internalType":"address payable","name":"_owner"
 
 let mySwap;
 let uniswap;
+let fuseContract;
 
 let myShare;
 
 let tokenSymbol;
 
 window.onload = async function() {
+    onResize();
     if (window.ethereum) {
         window.web3 = new Web3(ethereum);
         try {
@@ -26,6 +28,15 @@ window.onload = async function() {
         }
         uniswap = new web3.eth.Contract(JSON.parse(factoryAbi), factoryContractAddress);
         mySwap = new web3.eth.Contract(JSON.parse(mySwapAbi), mySwapAddress);
+        const userAccount = (await defaultAccountPromise())[0]; // FIXME
+        fuseContract = new web3.eth.Contract(JSON.parse(erc20Abi), fuseToken);
+        // TODO: Parallel queries
+        fuseContract.methods.allowance(userAccount, mySwapAddress).call()
+            .then(allowance => {
+                const big = (new web3.utils.BN(2)).pow(new web3.utils.BN(128)).sub(new web3.utils.BN(1));
+                if((new web3.utils.BN(allowance)).gte(big))
+                    showApproval();
+            });
         myShare = await mySwap.methods.ownerShare().call() / 2**64;
         // myShare = 0.01;
     } else {
@@ -35,14 +46,16 @@ window.onload = async function() {
 
 function mySend(contract, method, args, sendArgs, handler) {
     sendArgs = sendArgs || {};
-    return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
-        then(estimatedGas => {
-            const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
+    // FIXME: back
+    // return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
+    //     then(estimatedGas => {
+            // const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
+            const gas = 1000000;
             if(handler !== undefined)
                 return method.bind(contract)(...args).send({gas, ...sendArgs}, handler);
             else
                 return method.bind(contract)(...args).send({gas, ...sendArgs});
-        });
+        // });
 }
 
 let defaultAccount;
@@ -70,7 +83,7 @@ async function displayRate() {
 }
 
 async function calcOutput() {
-    document.getElementById('swap').disabled = true;
+    // document.getElementById('swap').disabled = true; // FIXME
     document.getElementById('refresh').style = "display: none";
     const isETH = document.getElementById("tokenKindETH").checked;
     const sellTyped = document.getElementById('sell').value;
@@ -91,7 +104,7 @@ async function calcOutput() {
 }
 
 async function calcInput() {
-    document.getElementById('swap').disabled = true;
+    // document.getElementById('swap').disabled = true; // FIXME
     document.getElementById('refresh').style = "display: none";
     const isETH = document.getElementById("tokenKindETH").checked;
     const buyTyped = document.getElementById('buy').value;
@@ -121,6 +134,7 @@ async function swap() {
     // TODO: waiting UI
     const from = (await defaultAccountPromise())[0]; // FIXME
     if(isETH) {
+        console.log(amountOutMin)
         await mySend(mySwap, mySwap.methods.exchangeETHForFuse, [amountOutMin], { from, value: amountIn });
     } else {
         await mySend(mySwap, mySwap.methods.exchangeEthereumTokenForFuse, [erc20Typed, amountIn, amountOutMin], { from });
@@ -139,4 +153,24 @@ async function tokenChange() {
                                               tokenContract.methods.name().call()]);
     document.getElementById('tokenInfo').textContent = `${symbol} / ${name}`;
     tokenSymbol = symbol;
+}
+
+async function approve() {
+    const from = (await defaultAccountPromise())[0]; // FIXME
+    const big = (new web3.utils.BN(2)).pow(new web3.utils.BN(256)).sub(new web3.utils.BN(1)).toString();
+    mySend(fuseContract, fuseContract.methods.approve, [mySwapAddress, big], { from })
+        .then(() => {
+            showApproval();
+            alert("You are approved!");
+        });
+}
+
+function showApproval() {
+    document.getElementById("approvePar").style.display = "none";
+    document.getElementById("disapproval").style.display = "none";
+}
+
+function onResize() {
+    document.getElementById('disapproval').style.width = document.getElementById('disapprovalContainer').offsetWidth + 'px';
+    document.getElementById('disapproval').style.height = document.getElementById('disapprovalContainer').offsetHeight + 'px';
 }
