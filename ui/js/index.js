@@ -33,6 +33,18 @@ window.onload = async function() {
     }
 }
 
+function mySend(contract, method, args, sendArgs, handler) {
+    sendArgs = sendArgs || {}
+    return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
+        then((estimatedGas) => {
+            const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
+            if(handler !== undefined)
+                return method.bind(contract)(...args).send({gas, ...sendArgs}, handler);
+            else
+                return method.bind(contract)(...args).send({gas, ...sendArgs});
+        });
+}
+
 let defaultAccount;
 // web3.eth.defaultAccount = web3.eth.accounts[0];
 async function defaultAccountPromise() {
@@ -105,15 +117,13 @@ async function swap() {
     const amountIn = web3.utils.toWei(document.getElementById('sell').value);
     const amountOutTyped = document.getElementById('buy').value;
     const slippage = document.getElementById('slippage').value / 100;
-    const amountOutMin = web3.utils.toWei(amountOutTyped * (1 - slippage));
+    const amountOutMin = web3.utils.toWei(String(amountOutTyped * (1 - slippage))); // FIXME
     // TODO: waiting UI
+    const from = (await defaultAccountPromise())[0]; // FIXME
     if(isETH) {
-        console.log(await defaultAccountPromise(), amountOutMin, amountIn)
-        await mySwap.methods.exchangeETHForFuse(amountOutMin)
-            .send({from: (await defaultAccountPromise())[0], value: amountIn});
+        await mySend(mySwap, mySwap.methods.exchangeETHForFuse, [amountOutMin], { from, value: amountIn });
     } else {
-        await mySwap.methods.exchangeEthereumTokenForFuse(erc20Typed, amountIn, amountOutMin)
-            .send({from: (await defaultAccountPromise())[0]});
+        await mySend(mySwap, mySwap.methods.exchangeEthereumTokenForFuse, [erc20Typed, amountIn, amountOutMin], { from });
     }
 }
 
