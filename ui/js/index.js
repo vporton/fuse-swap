@@ -35,13 +35,13 @@ function checkNumber(n) {
 
 async function calcOutput() {
     document.getElementById('swap').disabled = true;
-    const sellTyped = document.getElementById('sell').value;
-    if(!checkNumber(sellTyped)) return;
-    const sell = web3.utils.toWei(sellTyped);
     const isETH = document.getElementById("tokenKindETH").checked;
+    const sellTyped = document.getElementById('sell').value;
+    const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
+    if(!checkNumber(sellTyped) || (!isETH && !web3.utils.isAddress(erc20Typed))) return;
+    const sell = web3.utils.toWei(sellTyped);
     const uniswapV2Router02 = new web3.eth.Contract(JSON.parse(routerAbi), uniswapV2Router02Address);
-    const tokenAddress = isETH ? await uniswapV2Router02.methods.WETH().call()
-                               : document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
+    const tokenAddress = isETH ? await uniswapV2Router02.methods.WETH().call() : erc20Typed;
     const buyData = await uniswapV2Router02.methods.getAmountsOut(sell, [tokenAddress, fuseToken]).call()
         .then(p => {
             document.getElementById('swap').disabled = false;
@@ -52,13 +52,13 @@ async function calcOutput() {
 
 async function calcInput() {
     document.getElementById('swap').disabled = true;
-    const buyTyped = document.getElementById('buy').value;
-    if(!checkNumber(buyTyped)) return;
-    const buy = web3.utils.toWei(document.getElementById('buy').value);
     const isETH = document.getElementById("tokenKindETH").checked;
+    const buyTyped = document.getElementById('buy').value;
+    const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
+    if(!checkNumber(sellTyped) || (!isETH && !web3.utils.isAddress(erc20Typed))) return;
+    const buy = web3.utils.toWei(document.getElementById('buy').value);
     const uniswapV2Router02 = new web3.eth.Contract(JSON.parse(routerAbi), uniswapV2Router02Address);
-    const tokenAddress = isETH ? await uniswapV2Router02.methods.WETH().call()
-                               : document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d;
+    const tokenAddress = isETH ? await uniswapV2Router02.methods.WETH().call() : erc20Typed;
     const sellData = await uniswapV2Router02.methods.getAmountsIn(buy, [tokenAddress, fuseToken]).call()
         .then(p => {
             document.getElementById('swap').disabled = false;
