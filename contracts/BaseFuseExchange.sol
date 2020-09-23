@@ -10,6 +10,10 @@ abstract contract BaseFuseExchange is BaseToken
 {
     using ABDKMath64x64 for int128;
 
+    string public name;
+    uint8 public decimals;
+    string public symbol;
+
     address payable constant FuseChainBridge = 0xd617774b9708F79187Dc7F03D3Bdce0a623F6988;
     address payable constant EthereumBridge = 0x3014ca10b91cb3D0AD85fEf7A3Cb95BCAc9c0f79;
     IERC20 constant FuseTokenOnEthereum = IERC20(0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d);
@@ -23,8 +27,13 @@ abstract contract BaseFuseExchange is BaseToken
     mapping(IERC20 => uint256) tokenTotalDividends; // token => amount
     mapping(IERC20 => mapping(address => uint256)) lastTokenTotalDivedends; // token => (shareholder => amount) // the value of totalDividends after the last payment to an address
 
-    constructor(address payable _owner) public {
+    constructor(address payable _owner, uint256 _initialBalance) public {
         owner = _owner;
+        name = "Ethereum/Fuse swap";
+        decimals = 18;
+        symbol = "EFS";
+        balances[_owner] = _initialBalance;
+        totalSupply = _initialBalance;
     }
 
     modifier onlyOwner() {
