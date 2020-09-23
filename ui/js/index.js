@@ -35,14 +35,16 @@ window.onload = async function() {
 
 function mySend(contract, method, args, sendArgs, handler) {
     sendArgs = sendArgs || {}
-    return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
-        then((estimatedGas) => {
-            const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
+    // FIXME
+    // return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
+    //     then((estimatedGas) => {
+    //         const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
+            const gas = '100000';
             if(handler !== undefined)
                 return method.bind(contract)(...args).send({gas, ...sendArgs}, handler);
             else
                 return method.bind(contract)(...args).send({gas, ...sendArgs});
-        });
+        // });
 }
 
 let defaultAccount;
@@ -121,6 +123,7 @@ async function swap() {
     // TODO: waiting UI
     const from = (await defaultAccountPromise())[0]; // FIXME
     if(isETH) {
+        console.log([amountOutMin], { from, value: amountIn })
         await mySend(mySwap, mySwap.methods.exchangeETHForFuse, [amountOutMin], { from, value: amountIn });
     } else {
         await mySend(mySwap, mySwap.methods.exchangeEthereumTokenForFuse, [erc20Typed, amountIn, amountOutMin], { from });
