@@ -10,14 +10,15 @@
         <h1>Swap Ethereum for Fuse</h1>
         <p>You sell:
             <label><input type="radio" name="tokenKind" value="ETH" id="tokenKindETH" checked="checked" onclick="document.getElementById('erc20Par').style='display: none'; calcOutput();"/> ETH</label>
-            <label><input type="radio" name="tokenKind" value="ERC20" id="tokenKindERC20" onclick="document.getElementById('erc20Par').style='display: block'; calcOutput();"/> ERC-20</label>
+            <label><input type="radio" name="tokenKind" value="ERC20" id="tokenKindERC20" onclick="document.getElementById('erc20Par').style='display: block'; calcOutput();" disabled="disabled"/> ERC-20</label>
         </p>
         <p id="erc20Par" style="display: none;">ERC-20 token address:
             <input type="text" size="42" id="erc20" onchange="tokenChange(); calcOutput()"/> <!-- TODO: promises in parallel. -->
             <span id="tokenInfo"></span></p>
         <p>Amount of ETH/token you sell: <input type="text" id="sell" onchange="calcOutput()"/></p>
         <p>Amount of Fuse (on Fuse Network) you buy: <input type="text" id="buy" onchange="calcInput()"/></p>
-        <p>Current exchange rate: <span id="rate"></span></p>
+        <p>Current exchange rate: <span id="rate"></span>
+            <input id="refresh" type="button" value="Refresh" onclick="displayRate()" style="display: none"/></p>
         <p>Slippage tolerance <small>(maximum price increase that does not prevent the transaction)</small>:
             <input type="text" value="0.5" id="slippage" size="2"/>% (Don't change if unsure.)</p>
         </p>

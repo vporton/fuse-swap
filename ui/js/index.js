@@ -60,6 +60,7 @@ async function displayRate() {
 
 async function calcOutput() {
     document.getElementById('swap').disabled = true;
+    document.getElementById('refresh').style = "display: none";
     const isETH = document.getElementById("tokenKindETH").checked;
     const sellTyped = document.getElementById('sell').value;
     const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d
@@ -71,6 +72,7 @@ async function calcOutput() {
     await uniswapV2Router02.methods.getAmountsOut(sell, [tokenAddress, fuseToken]).call()
         .then(async p => {
             document.getElementById('swap').disabled = false;
+            document.getElementById('refresh').style = "display: inline";
             document.getElementById('buy').value = web3.utils.fromWei(p[1]);
             await displayRate();
             return p;
@@ -79,6 +81,7 @@ async function calcOutput() {
 
 async function calcInput() {
     document.getElementById('swap').disabled = true;
+    document.getElementById('refresh').style = "display: none";
     const isETH = document.getElementById("tokenKindETH").checked;
     const buyTyped = document.getElementById('buy').value;
     const erc20Typed = document.getElementById('erc20').value; // 0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d
@@ -90,6 +93,7 @@ async function calcInput() {
     await uniswapV2Router02.methods.getAmountsIn(buy, [tokenAddress, fuseToken]).call()
         .then(async p => {
             document.getElementById('swap').disabled = false;
+            document.getElementById('refresh').style = "display: inline";
             document.getElementById('sell').value = web3.utils.fromWei(p[0]);
             await displayRate();
             return p;
