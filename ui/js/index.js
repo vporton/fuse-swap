@@ -130,7 +130,7 @@ async function swap() {
     const amountIn = web3.utils.toWei(document.getElementById('sell').value);
     const amountOutTyped = document.getElementById('buy').value;
     const slippage = document.getElementById('slippage').value / 100;
-    const amountOutMin = web3.utils.toWei(String(amountOutTyped * (1 - slippage))); // FIXME
+    const amountOutMin = web3.utils.toWei((amountOutTyped * (1 - slippage)).toFixed(15)); // toWei() does not accept more 15 signs
     // TODO: waiting UI
     const from = (await defaultAccountPromise())[0]; // FIXME
     if(isETH) {
