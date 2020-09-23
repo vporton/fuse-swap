@@ -11,3 +11,5 @@
 * Show price in dollars.
 
 * Show ETH/token balance.
+
+* Check that we are on mainnet.
