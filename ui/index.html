@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Swap Ethereum for Fuse</title>
+    </head>
+    <body>
+        <h1>Swap Ethereum for Fuse</h1>
+        <p>You sell:
+            <label><input type="radio" name="tokenKind" value="ETH" checked="checked" onclick="document.getElementById('erc20Par').style='display: none'"/> ETH</label>
+            <label><input type="radio" name="tokenKind" value="ERC20" onclick="document.getElementById('erc20Par').style='display: block'"/> ERC-20</label>
+        </p>
+        <p id="erc20Par" style="display: none;">ERC-20 token address: <input type="text" size="42" id="erc20"/></p>
+        <p>Amount of ETH you sell: <input type="text" id="eth"/></p>
+        <p>Amount of Fuse (on Fuse Network) you buy: <input type="text" id="fuse"/></p>
+        <p>Current exchange rate: <span id="rate"></span></p>
+        <p><input type="button" value="Swap!"/></p>
+    </body>
+</html>
