@@ -4,8 +4,9 @@ pragma solidity =0.6.6;
 // import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@uniswap/v2-periphery/contracts/UniswapV2Router02.sol';
 import './ABDKMath64x64.sol';
+import './BaseToken.sol';
 
-abstract contract BaseFuseExchange
+abstract contract BaseFuseExchange is BaseToken
 {
     using ABDKMath64x64 for int128;
 
@@ -16,6 +17,11 @@ abstract contract BaseFuseExchange
 
     address payable public owner;
     int128 public ownerShare = int128(1).divi(int128(100)); // 1%
+
+    uint256 totalDividends = 0;
+    mapping(address => uint256) lastTotalDivedends; // the value of totalDividends after the last payment to an address
+    mapping(IERC20 => uint256) tokenTotalDividends; // token => amount
+    mapping(IERC20 => mapping(address => uint256)) lastTokenTotalDivedends; // token => (shareholder => amount) // the value of totalDividends after the last payment to an address
 
     constructor(address payable _owner) public {
         owner = _owner;
@@ -55,7 +61,7 @@ abstract contract BaseFuseExchange
 
     function exchangeETHForFuse(uint256 amountOutMin) external payable {
         uint256 ownerAmount = ownerShare.mulu(msg.value);
-        owner.transfer(ownerAmount);
+        totalDividends += ownerAmount;
         uint256 amountInRemaining = msg.value - ownerAmount;
         this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin);
     }
@@ -69,4 +75,48 @@ abstract contract BaseFuseExchange
     }
 
     function Bridge() internal virtual returns (address payable);
+
+// PST //
+
+    function _dividendsOwing(address payable _account) internal view returns(uint256) {
+        uint256 _newDividends = totalDividends - lastTotalDivedends[_account];
+        return (balances[_account] * _newDividends) / totalSupply; // rounding down
+    }
+
+    function dividendsOwing(address payable _account) external view returns(uint256) {
+        return _dividendsOwing(_account);
+    }
+
+    function withdrawProfit() external {
+        uint256 _owing = _dividendsOwing(msg.sender);
+
+        // Against rounding errors. Not necessary because of rounding down.
+        // if(_owing > address(this).balance) _owing = address(this).balance;
+
+        if(_owing > 0) {
+            msg.sender.transfer(_owing);
+            lastTotalDivedends[msg.sender] = totalDividends;
+        }
+    }
+
+    function _tokenDividendsOwing(IERC20 _token, address payable _account) internal view returns(uint256) {
+        uint256 _newDividends = tokenTotalDividends[_token] - lastTokenTotalDivedends[_token][_account];
+        return (balances[_account] * _newDividends) / totalSupply; // rounding down
+    }
+
+    function tokenDividendsOwing(IERC20 _token, address payable _account) external view returns(uint256) {
+        return _tokenDividendsOwing(_token, _account);
+    }
+
+    function withdrawTokenProfit(IERC20 _token) external {
+        uint256 _owing = _tokenDividendsOwing(_token, msg.sender);
+
+        // Against rounding errors. Not necessary because of rounding down.
+        // if(_owing > _token.balanceOf(address(this)) _owing = _token.balanceOf(address(this));
+
+        if(_owing > 0) {
+            require(_token.transferFrom(msg.sender, owner, _owing), 'transfer to owner failed.');
+            lastTokenTotalDivedends[_token][msg.sender] = tokenTotalDividends[_token];
+        }
+    }
 }
