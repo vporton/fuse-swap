@@ -86,9 +86,13 @@ abstract contract BaseFuseSwap is BaseToken
     function _deliverToBridge() internal {
         // Better would be to check balance twice, but that would use gas.
         uint256 fuseAmount = FuseTokenOnEthereum.balanceOf(address(this)) - tokenTotalDividends[FuseTokenOnEthereum];
-        FuseTokenOnEthereum.approve(address(this), fuseAmount);
+        this.approveForSenderImpl(msg.sender, fuseAmount); // change msg.sender
         FuseTokenOnEthereum.transferFrom(address(this), msg.sender, fuseAmount);
         FuseTokenOnEthereum.transfer(Bridge(), fuseAmount);
+    }
+
+    function approveForSenderImpl(address sender, uint256 fuseAmount) external {
+        FuseTokenOnEthereum.approve(sender, fuseAmount);
     }
 
     function Bridge() internal virtual returns (address payable);
