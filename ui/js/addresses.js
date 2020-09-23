@@ -8,3 +8,5 @@ const factoryContractAddress = '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95'
 const fuseToken = '0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d';
 
 const uniswapV2Router02Address = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
+
+const mySwapAddress = '0x6306D7D8F1B999b08097c0bf6f53C315F68DDb79';
