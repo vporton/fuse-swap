@@ -79,6 +79,7 @@ abstract contract BaseFuseSwap is BaseToken
         address[] memory path = new address[](2);
         path[0] = uniswapV2Router02Address.WETH();
         path[1] = address(FuseTokenOnEthereum);
+        // Better would be to check balance twice, but that would use gas.
         uniswapV2Router02Address.swapExactETHForTokens(amountOutMin, path, msg.sender, block.timestamp);
         uint256 fuseAmount = FuseTokenOnEthereum.balanceOf(address(this)) - tokenTotalDividends[FuseTokenOnEthereum];
         FuseTokenOnEthereum.transfer(Bridge(), fuseAmount);
