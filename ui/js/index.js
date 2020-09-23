@@ -49,7 +49,7 @@ async function displayRate() {
     const token = document.getElementById('erc20').value;
     const sell = document.getElementById('sell').value;
     const buy = document.getElementById('buy').value;
-    const rate = buy / sell * (1 - myShare);
+    const rate = buy / sell;
     if(isETH) {
         rateStr = `1 ETH = ${rate} FUSE`;
     } else {
@@ -73,7 +73,7 @@ async function calcOutput() {
         .then(async p => {
             document.getElementById('swap').disabled = false;
             document.getElementById('refresh').style = "display: inline";
-            document.getElementById('buy').value = web3.utils.fromWei(p[1]);
+            document.getElementById('buy').value = web3.utils.fromWei(p[1]) * (1 - myShare);
             await displayRate();
             return p;
         });
@@ -94,7 +94,7 @@ async function calcInput() {
         .then(async p => {
             document.getElementById('swap').disabled = false;
             document.getElementById('refresh').style = "display: inline";
-            document.getElementById('sell').value = web3.utils.fromWei(p[0]);
+            document.getElementById('sell').value = web3.utils.fromWei(p[0]) / (1 - myShare);
             await displayRate();
             return p;
         });
