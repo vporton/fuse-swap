@@ -13,6 +13,8 @@ let uniswap;
 
 let myShare;
 
+let tokenSymbol;
+
 window.onload = async function() {
     if (window.ethereum) {
         window.web3 = new Web3(ethereum);
@@ -51,10 +53,7 @@ async function displayRate() {
     if(isETH) {
         rateStr = `1 ETH = ${rate} FUSE`;
     } else {
-        // TODO: not here
-        const tokenContract = new web3.eth.Contract(JSON.parse(erc20Abi), token);
-        const symbol = await tokenContract.methods.symbol().call();
-        rateStr = `1 ${symbol} = ${rate} FUSE`;
+        rateStr = `1 ${tokenSymbol} = ${rate} FUSE`;
     }
     document.getElementById('rate').textContent = rateStr;
 }
@@ -112,4 +111,18 @@ async function swap() {
         await mySwap.methods.exchangeEthereumTokenForFuse(erc20Typed, amountIn, amountOutMin)
             .send({from: await defaultAccountPromise()});
     }
+}
+
+async function tokenChange() {
+    const token = document.getElementById('erc20').value;
+    if(!web3.utils.isAddress(token)) {
+        document.getElementById('tokenInfo').textContent = "";
+        return;
+    }
+    const tokenContract = new web3.eth.Contract(JSON.parse(erc20Abi), token);
+    
+    const [symbol, name] = await Promise.all([tokenContract.methods.symbol().call(),
+                                              tokenContract.methods.name().call()]);
+    document.getElementById('tokenInfo').textContent = `${symbol} / ${name}`;
+    tokenSymbol = symbol;
 }
