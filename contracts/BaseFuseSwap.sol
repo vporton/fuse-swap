@@ -73,6 +73,7 @@ abstract contract BaseFuseSwap is BaseToken
         totalDividends += ownerAmount;
         uint256 amountInRemaining = msg.value - ownerAmount;
         this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin);
+        _deliverToBridge();
     }
 
     function exchangeETHForFuseImpl(uint256 amountOutMin) external payable {
@@ -80,7 +81,6 @@ abstract contract BaseFuseSwap is BaseToken
         path[0] = uniswapV2Router02Address.WETH();
         path[1] = address(FuseTokenOnEthereum);
         uniswapV2Router02Address.swapExactETHForTokens{value: msg.value}(amountOutMin, path, msg.sender, block.timestamp);
-        _deliverToBridge();
     }
 
     function _deliverToBridge() internal {
