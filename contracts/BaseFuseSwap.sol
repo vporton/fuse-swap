@@ -125,7 +125,7 @@ abstract contract BaseFuseSwap is BaseToken
         // if(_owing > _token.balanceOf(address(this)) _owing = _token.balanceOf(address(this));
 
         if(_owing > 0) {
-            require(_token.transferFrom(msg.sender, owner, _owing), 'transfer to owner failed.');
+            require(_token.transfer(owner, _owing), 'transfer to shareholder failed.');
             lastTokenTotalDivedends[_token][msg.sender] = tokenTotalDividends[_token];
         }
     }
