@@ -11,9 +11,6 @@
             input[type=button] { background: lightgrey; color: black; font-weight: bold; }
             #disapproval {
                 position: fixed;
-                /* width: 500px;
-                height: 300px;
-                max-height: auto; */
                 background: gray;
                 z-index: 1000;
                 opacity: 50%;
@@ -43,7 +40,7 @@
                 <p>Slippage tolerance <small>(maximum price increase that does not prevent the transaction)</small>:
                     <input type="text" value="0.5" id="slippage" size="2"/>% (Don't change if unsure.)</p>
                 </p>
-                <p><input id="swap" type="button" value="Swap!" onclick="swap()"/></p> <!-- FIXME: disabled -->
+                <p><input id="swap" type="button" value="Swap!" onclick="swap()" disabled="disabled"/></p>
             </div>
         </div>
         <p style="font-size: small"><a href="https://github.com/vporton/fuse-swap">GitHub</a></p>

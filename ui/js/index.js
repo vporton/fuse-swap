@@ -46,16 +46,14 @@ window.onload = async function() {
 
 function mySend(contract, method, args, sendArgs, handler) {
     sendArgs = sendArgs || {};
-    // FIXME: back
-    // return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
-    //     then(estimatedGas => {
-            // const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
-            const gas = 1000000;
+    return method.bind(contract)(...args).estimateGas({gas: '1000000', ...sendArgs}).
+        then(estimatedGas => {
+            const gas = String(Math.floor(estimatedGas * 1.15) + 24000);
             if(handler !== undefined)
                 return method.bind(contract)(...args).send({gas, ...sendArgs}, handler);
             else
                 return method.bind(contract)(...args).send({gas, ...sendArgs});
-        // });
+        });
 }
 
 let defaultAccount;
@@ -83,7 +81,7 @@ async function displayRate() {
 }
 
 async function calcOutput() {
-    // document.getElementById('swap').disabled = true; // FIXME
+    document.getElementById('swap').disabled = true;
     document.getElementById('refresh').style = "display: none";
     const isETH = document.getElementById("tokenKindETH").checked;
     const sellTyped = document.getElementById('sell').value;
@@ -104,7 +102,7 @@ async function calcOutput() {
 }
 
 async function calcInput() {
-    // document.getElementById('swap').disabled = true; // FIXME
+    document.getElementById('swap').disabled = true;
     document.getElementById('refresh').style = "display: none";
     const isETH = document.getElementById("tokenKindETH").checked;
     const buyTyped = document.getElementById('buy').value;

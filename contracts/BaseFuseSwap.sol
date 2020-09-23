@@ -15,7 +15,7 @@ abstract contract BaseFuseSwap is BaseToken
 
     address payable constant FuseChainBridge = 0xd617774b9708F79187Dc7F03D3Bdce0a623F6988;
     address payable constant EthereumBridge = 0x3014ca10b91cb3D0AD85fEf7A3Cb95BCAc9c0f79;
-    IERC20 constant FuseTokenOnEthereum = IERC20(0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735/*0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d*/); // FIXME: restore
+    IERC20 constant FuseTokenOnEthereum = IERC20(0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d);
     UniswapV2Router02 constant uniswapV2Router02Address = UniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
 
     address payable public owner;
@@ -63,18 +63,17 @@ abstract contract BaseFuseSwap is BaseToken
         address[] memory path = new address[](2);
         path[0] = address(tokenIn);
         path[1] = address(FuseTokenOnEthereum);
-        // FIXME: uncomment
-        // uint256[] memory amounts =
-        //     uniswapV2Router02Address.swapExactTokensForTokens(amountInRemaining, amountOutMin, path, msg.sender, block.timestamp);
-        _deliverToBridge(0/*amounts[1]*/); // FIXME
+        uint256[] memory amounts =
+            uniswapV2Router02Address.swapExactTokensForTokens(amountInRemaining, amountOutMin, path, msg.sender, block.timestamp);
+        _deliverToBridge(amounts[1]);
     }
 
     function exchangeETHForFuse(uint256 amountOutMin) external payable {
         uint256 ownerAmount = ownerShare.mulu(msg.value);
         totalDividends += ownerAmount;
         uint256 amountInRemaining = msg.value - ownerAmount;
-        // uint256 output = this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin, msg.sender); // FIXME: uncomment
-        _deliverToBridge(amountOutMin/*output*/); // FIXME
+        uint256 output = this.exchangeETHForFuseImpl{value: amountInRemaining}(amountOutMin, msg.sender);
+        _deliverToBridge(output);
     }
 
     function exchangeETHForFuseImpl(uint256 amountOutMin, address sender) external payable returns (uint256 output) {
