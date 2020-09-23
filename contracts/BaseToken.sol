@@ -12,7 +12,8 @@ contract BaseToken is Token {
     mapping (address => mapping (address => uint256)) public allowed;
 
     function transfer(address _to, uint256 _value) override virtual external returns (bool success) {
-        require(balances[msg.sender] >= _value && balances[_to] + _value >= balances[_to]);
+        require(balances[msg.sender] >= _value, "Not enough balance");
+        require(balances[_to] + _value >= balances[_to], "Oveflow");
         balances[msg.sender] -= _value;
         balances[_to] += _value;
         emit Transfer(msg.sender, _to, _value);
