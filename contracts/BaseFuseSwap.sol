@@ -22,7 +22,7 @@ abstract contract BaseFuseSwap is BaseToken
     address payable public owner;
     int128 public ownerShare = int128(1).divi(int128(100)); // 1%
 
-    uint256 totalDividends = 0;
+    uint256 totalDividends;
     mapping(address => uint256) lastTotalDivedends; // the value of totalDividends after the last payment to an address
     mapping(IERC20 => uint256) tokenTotalDividends; // token => amount
     mapping(IERC20 => mapping(address => uint256)) lastTokenTotalDivedends; // token => (shareholder => amount) // the value of totalDividends after the last payment to an address
