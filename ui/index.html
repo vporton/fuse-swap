@@ -17,6 +17,8 @@
         <p>Amount of ETH/token you sell: <input type="text" id="sell" onchange="calcOutput()"/></p>
         <p>Amount of Fuse (on Fuse Network) you buy: <input type="text" id="buy" onchange="calcInput()"/></p>
         <p>Current exchange rate: <span id="rate"></span></p>
+        <p>Slippage tolerance: <input type="text" value="0.5" id="slippage" size="2"/>% (Don't change if unsure.)</p>
+        </p>
         <p><input id="swap" type="button" value="Swap!" onclick="swap()" disabled="disabled"/></p>
     </body>
 </html>
