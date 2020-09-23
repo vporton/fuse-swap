@@ -57,7 +57,7 @@ abstract contract BaseFuseSwap is BaseToken
 
     function exchangeEthereumTokenForFuse(IERC20 tokenIn, uint256 amountIn, uint256 amountOutMin) external {
         uint256 ownerAmount = ownerShare.mulu(amountIn);
-        require(tokenIn.transferFrom(msg.sender, owner, ownerAmount), 'transfer to owner failed.');
+        tokenTotalDividends[tokenIn] += ownerAmount;
         uint256 amountInRemaining = amountIn - ownerAmount;
         require(tokenIn.transferFrom(msg.sender, address(this), amountInRemaining), 'transferFrom failed.');
         require(tokenIn.approve(address(uniswapV2Router02Address), amountInRemaining), 'approve failed.');
@@ -65,7 +65,7 @@ abstract contract BaseFuseSwap is BaseToken
         path[0] = address(tokenIn);
         path[1] = address(FuseTokenOnEthereum);
         uniswapV2Router02Address.swapExactTokensForTokens(amountInRemaining, amountOutMin, path, msg.sender, block.timestamp);
-        FuseTokenOnEthereum.transfer(Bridge(), FuseTokenOnEthereum.balanceOf(address(this)));
+        FuseTokenOnEthereum.transfer(Bridge(), amountInRemaining);
     }
 
     function exchangeETHForFuse(uint256 amountOutMin) external payable {
@@ -80,7 +80,8 @@ abstract contract BaseFuseSwap is BaseToken
         path[0] = uniswapV2Router02Address.WETH();
         path[1] = address(FuseTokenOnEthereum);
         uniswapV2Router02Address.swapExactETHForTokens(amountOutMin, path, msg.sender, block.timestamp);
-        FuseTokenOnEthereum.transfer(Bridge(), FuseTokenOnEthereum.balanceOf(address(this)));
+        uint256 fuseAmount = FuseTokenOnEthereum.balanceOf(address(this)) - tokenTotalDividends[FuseTokenOnEthereum];
+        FuseTokenOnEthereum.transfer(Bridge(), fuseAmount);
     }
 
     function Bridge() internal virtual returns (address payable);
