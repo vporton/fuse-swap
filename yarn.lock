@@ -1025,6 +1025,11 @@ array-unique@^0.3.2:
   resolved "https://registry.yarnpkg.com/array-unique/-/array-unique-0.3.2.tgz#a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428"
   integrity sha1-qJS3XUvE9s1nnvMkSp/Y9Gri1Cg=
 
+arweave-deploy@^1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/arweave-deploy/-/arweave-deploy-1.9.1.tgz#1cc45fc5eb2fd62985ad4e54076ffe850a6a33f7"
+  integrity sha512-yNC9joASgsqQBASLwNivzMJxUHyXuzWHg7qLIGg/+y5hDprSy3fsMUNJ83qCpATYnmJdnECcBXKESBnhalM88w==
+
 asn1.js@^5.2.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.4.1.tgz#11a980b84ebb91781ce35b0fdc2ee294e3783f07"
