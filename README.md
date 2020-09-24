@@ -4,4 +4,4 @@ This app allows easily swap Ethereum from mainnet for Fuse on Fusenet.
 
 Just like Uniswap.
 
-https://arweave.net/WtD5cPHYMTGfhWfHQW_OY7SPFqTIc8HjBB09uV_hsSY
+https://arweave.net/m3duJxXA3KtUMGy_VkceJxUGMlBA0IZ59mufkU2xmt8
