@@ -13,3 +13,5 @@
 * Show ETH/token balance.
 
 * Check that we are on mainnet.
+
+* The shadow does not move when scrolling.
